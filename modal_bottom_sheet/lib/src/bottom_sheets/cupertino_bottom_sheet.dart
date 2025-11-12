@@ -49,6 +49,7 @@ class _CupertinoBottomSheetContainer extends StatelessWidget {
   final Radius topRadius;
   final BoxShadow? shadow;
   final SystemUiOverlayStyle? overlayStyle;
+  final bool removeTopPadding;
 
   const _CupertinoBottomSheetContainer({
     required this.child,
@@ -56,13 +57,16 @@ class _CupertinoBottomSheetContainer extends StatelessWidget {
     required this.topRadius,
     this.overlayStyle,
     this.shadow,
+    this.removeTopPadding = false
   });
 
   @override
   Widget build(BuildContext context) {
     final scopedOverlayStyle = overlayStyle;
     final topSafeAreaPadding = MediaQuery.of(context).padding.top;
-    final topPadding = _kPreviousPageVisibleOffset + topSafeAreaPadding;
+    final topPadding = !removeTopPadding
+      ? _kPreviousPageVisibleOffset + topSafeAreaPadding
+      : 0.0;
 
     final shadow = this.shadow ?? _kDefaultBoxShadow;
     BoxShadow(blurRadius: 10, color: Colors.black12, spreadRadius: 5);
@@ -120,6 +124,7 @@ Future<T?> showCupertinoModalBottomSheet<T>({
   BoxShadow? shadow,
   SystemUiOverlayStyle? overlayStyle,
   double? closeProgressThreshold,
+  bool? removeTopPadding,
 }) async {
   assert(debugCheckHasMediaQuery(context));
   final hasMaterialLocalizations =
@@ -138,6 +143,7 @@ Future<T?> showCupertinoModalBottomSheet<T>({
               topRadius: topRadius,
               shadow: shadow,
               overlayStyle: overlayStyle,
+              removeTopPadding: removeTopPadding ?? false
             ),
         secondAnimationController: secondAnimation,
         expanded: expand,
@@ -156,7 +162,8 @@ Future<T?> showCupertinoModalBottomSheet<T>({
         duration: duration,
         settings: settings,
         transitionBackgroundColor: transitionBackgroundColor ?? Colors.black,
-        overlayStyle: overlayStyle),
+        overlayStyle: overlayStyle,
+      ),
   );
   return result;
 }
@@ -446,6 +453,7 @@ class CupertinoScaffold extends StatefulWidget {
     Duration? duration,
     RouteSettings? settings,
     BoxShadow? shadow,
+    bool? removeTopPadding,
     @Deprecated(
       'Will be ignored. OverlayStyle is computed from luminance of transitionBackgroundColor',
     )
@@ -474,6 +482,7 @@ class CupertinoScaffold extends StatefulWidget {
         topRadius: topRadius ?? _kDefaultTopRadius,
         shadow: shadow,
         overlayStyle: overlayStyle,
+        removeTopPadding: removeTopPadding ?? false,
       ),
       expanded: expand,
       barrierLabel: barrierLabel,
